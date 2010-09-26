@@ -1,0 +1,22 @@
+Script started on Sun Sep 26 01:07:09 2010
+bash-3.2$ man time[4Ptimeman timerpython mint.py[C[C[C[C[C[C[C[C[C[Cls[Kcd src[4Plscd mintls[Kcd Dropbox/anju\ NYU/heuristics/[C[C[C[C[C[C[C[C[C[Ctime[Kcd Dropbox/anju\ NYU/heuristics/[C[C[C[C[C[C[C[C[C[Cls[Kcd mintls[Kcd src[4Plspython mint.py[C[C[C[C[C[C[C[C[C[C[5Pman timer[5Ptimeman time[Kpytom -[K[K[K[Khon -m "SimpleHttpServer"[1PServer"[1PServer"[1PServer"TServer"TServer"PServer"[C[C[C[C[C[C[C
+Serving HTTP on 0.0.0.0 port 8000 ...
+go to another server, do wget    "we get http://128.122.20.235:8000/mint.py
+and quit ctrl+c
+^CTraceback (most recent call last):
+  File "/System/Library/Frameworks/Python.framework/Versions/2.6/lib/python2.6/runpy.py", line 121, in _run_module_as_main
+    "__main__", fname, loader, pkg_name)
+  File "/System/Library/Frameworks/Python.framework/Versions/2.6/lib/python2.6/runpy.py", line 34, in _run_code
+    exec code in run_globals
+  File "/System/Library/Frameworks/Python.framework/Versions/2.6/lib/python2.6/SimpleHTTPServer.py", line 218, in <module>
+    test()
+  File "/System/Library/Frameworks/Python.framework/Versions/2.6/lib/python2.6/SimpleHTTPServer.py", line 214, in test
+    BaseHTTPServer.test(HandlerClass, ServerClass)
+  File "/System/Library/Frameworks/Python.framework/Versions/2.6/lib/python2.6/BaseHTTPServer.py", line 588, in test
+    httpd.serve_forever()
+  File "/System/Library/Frameworks/Python.framework/Versions/2.6/lib/python2.6/SocketServer.py", line 224, in serve_forever
+    r, w, e = select.select([self], [], [], poll_interval)
+KeyboardInterrupt
+bash-3.2$ exit
+
+Script done on Sun Sep 26 01:08:12 2010
