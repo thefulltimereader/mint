@@ -13,21 +13,39 @@ Design a set of 5 coin denominations for US $ s.t.:
 @author: ajk377
 '''
 
-'cost = [1e308]*100;'
+#cost = [float('inf')]*100;
 import time, math, sys
 
 maxN = 100;
-
-def calcCost(cost):
+cost = []
+flag=False
+def calcCost(i, d):
+    if(cost[i]!= float('inf')): return cost[i]
+    else:
+        minList = []
+        for index in range(len(d)):
+            if i-d[index] > 0:
+                minList += [calcCost(i-d[index], d)] 
+        cost[i] = 1+ min(minList)
+        return cost[i] 
+    #print cost
+    
+def calcCostOld(cost):
     for i in range(2, maxN):
-        if cost[i]==1e308:
-            for j in range(1, i+1):
+        if cost[i]==float('inf'):
+            for j in range(1, i):
                 #print "looking at j:",j,"i-j: ", (i-j)," cost[j]=", cost[j], " cost[i-j]=", cost[i-j]," cost[i]=", cost[i]
                 if(cost[j]+cost[i-j] < cost[i]):
                     cost[i]=cost[j]+cost[i-j]
                   #  print "at i: ",i," looking at j:",j,"i-j: ", (i-j)," cost[j]=", cost[j], " cost[i-j]=", cost[i-j]," cost[i]=", cost[i]
                   #  print "cost[",i,"] is now ", cost[i]
     #print cost
+    
+def calcAll(i, d):
+    for index in range(1, maxN):
+        if cost[index]==float('inf'):
+            calcCost(index, d)
+        
 
 def getAvgCost(cost, n):
     total = score=0.0
@@ -38,8 +56,8 @@ def getAvgCost(cost, n):
             score+=cost[i]*float(n)
         else:
             score+=cost[i]
-    print "total:",total,"avg cost:",(total/99) ,"\n score: ", score;
-    return (score, (total/99));
+    print "total:",total,"avg cost:",(total/maxN-1) ,"\n score: ", score;
+    return (score, (total/maxN-1));
 '''
     Eliminating search space:
         given an upper bound, B, which the highest # of coins needed to pay
@@ -49,29 +67,29 @@ def getAvgCost(cost, n):
         Say B = 5, you must have a 20
 '''
 def tryAll(n):
-    bestQuad = [1, 2, 3, 4, 5];
-    best = (1e308, 0);
-    cost = [1e308]*maxN
-    upperBound = math.ceil(99.0/5);
+    bestQuad = [1, 2, 3, 4, 5]; best = (float('inf'), float('inf'));
+    global cost
+    cost = [float('inf')]*maxN
+    upperBound = math.ceil(float(maxN-1)/5);
     for i in range(2, maxN-30):
-        cost[i:] = [1e308]*(100-i) #reuse the lookup table
-        for j in range(i+1, maxN-20):
-            cost[j:]=[1e308]*(100-j)
-            for h in range(j+1, maxN-10):
-                cost[h:]=[1e308]*(100-h)
-                for k in range(h+1, maxN):
-                    cost[k:]=[1e308]*(100-k)
-                    #cost = [1e308]*maxN
+        for j in range(i*2, maxN-20):
+            cost[i:]=[float('inf')]*(maxN-i)#reuse the lookup table
+            for h in range(j*2, maxN-10):
+                cost[j:]=[float('inf')]*(maxN-j)
+                for k in range(h*2, maxN):
+                    cost[h:]=[float('inf')]*(maxN-h)
                     tryQuad = [1, i, j, h, k];
                     if max(tryQuad)>=upperBound:
-                        cost[1]=cost[i]=cost[j]=cost[h]=cost[k]=1;
-                        calcCost(cost)
+                        cost[1]=cost[i]=cost[j]=cost[h]=1;
+                        calcAll(maxN-1, tryQuad)
+                        #calcCostOld(cost)
                         print "for ", tryQuad
                         result = getAvgCost(cost, n)
                         if result[0] < best[0]:
                             best = result
                             bestQuad = tryQuad
-                            print cost
+                            print "better:", cost
+
     print "With N=", n,"the best score is: ", best[0], " with avg # of coins:", best[1]," with denomination: " ,bestQuad
     
 def main():
@@ -80,6 +98,7 @@ def main():
     start = time.clock()
     tryAll(n)
     print "It took", (time.clock()-start),"seconds to complete"
+    print "now:", time.clock(), "start:", start
  
     
 if __name__ == '__main__':
