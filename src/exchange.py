@@ -76,18 +76,6 @@ def initCost(denom):
         cost[denom[i]]=1
     return cost
 
-def getAvgCost(cost):
-    total = score=0.0
-    for i in range(1, maxN):
-        if cost[i] <= 0: return (0,0)
-        total+= cost[i]
-   #     print "# of coins for ", i," is ", cost[i];
-        if i % 5 is 0:
-            score+=cost[i]*float(n)
-        else:
-            score+=cost[i]
-    print "total:",total,"avg cost:",(total/(len(cost)-1)) ,"\n score: ", score;
-    return (score, (total/(len(cost)-1)));
 
 def nextBestExchange(lastWinner):
     global counter
@@ -103,20 +91,20 @@ def nextBestExchange(lastWinner):
             exchangeCost = calcExchangeCost(exactCost, tryDenom)
             if 0 not in exchangeCost:
                 print "for ", tryDenom
-                print "0 haitte nai", exchangeCost
-                result =getAvgCost(exchangeCost)
-                if(result!=(0,0)):
-                    if result[0] < bestScore[0]:
-                        bestScore = result
-                        bestSoFar = tryDenom
-                        bestCost = exchangeCost
-                        print "bestCost!! %s" % bestCost
+                #print "0 haitte nai", exchangeCost
+                result =winner.getAvgCost(exchangeCost)
+                if result[0] < bestScore[0]:
+                    bestScore = result
+                    bestSoFar = tryDenom
+                    bestCost = exchangeCost
+                    print "bestCost!! %s" % bestCost
     print "With N=%s and %s denom, the best score is: %s with avg # of coins:%s with denomination: %s" %(n, len(lastWinner)+1, bestScore[0], bestScore[1],bestSoFar)
     print "With best cost %s"%bestCost
     return (bestSoFar, bestScore)
 
-def tryExchange():
-    global counter
+def tryExchange(arg1):
+    global counter, n
+    n = arg1
     counter = 0
     maxN= 100
     bestScore = (float('inf'), float('inf'))
@@ -132,16 +120,16 @@ def tryExchange():
                         exactCost = calcExactCost(tryDenom, cost)
                         exchangeCost = calcExchangeCost(exactCost, tryDenom)
                         if 0 not in exchangeCost:
-                            print "for ", tryDenom
-                            print "0 haitte nai", exchangeCost
-                            result =getAvgCost(exchangeCost)
+                            #print "for ", tryDenom
+                            #print "0 haitte nai", exchangeCost
+                            result =winner.getAvgCost(exchangeCost)
                             if result[0] < bestScore[0]:
                                 bestScore = result
                                 bestSoFar = tryDenom
                                 bestCost = exchangeCost
-                                print "bestCost!! %s" % bestCost
+                                #print "bestCost!! %s" % bestCost
     print "With N=%s and best FOR EXCHANGE is %s with score: %s with avg # of coins:%s" %(n, bestSoFar, bestScore[0], bestScore[1])
-    print "With best cost %s"%bestCost
+    #print "With best cost %s"%bestCost
 #    bestOne = nextBestExchange([])
 #    bestTwo= nextBestExchange(bestOne[0])
 #    bestThree = nextBestExchange(bestTwo[0])
@@ -155,6 +143,6 @@ if __name__ == '__main__':
     global n
     n = sys.argv[1]
     start = time.clock()
-    tryExchange()
+    tryExchange(n)
     print "It took", (time.clock()-start),"seconds to complete"
     print "now:", time.clock(), "start:", start

@@ -16,7 +16,7 @@ Design a set of 5 coin denominations for US $ s.t.:
 #cost = [float('inf')]*100;
 import time, math, sys
 counter=0
-n=1
+
 maxN = 100
 def calcCost(d, cost):
     cost[0]=0
@@ -50,7 +50,7 @@ def getAvgCost(cost):
             score+=cost[i]*float(n)
         else:
             score+=cost[i]
-    print "total:",total,"avg cost:",(total/(len(cost)-1)) ,"\n score: ", score;
+    #print "total:",total,"avg cost:",(total/(len(cost)-1)) ,"\n score: ", score;
     return (score, (total/(len(cost)-1)));
 '''
     Eliminating search space:
@@ -91,19 +91,20 @@ def nextBest(lastWinner):
         cost = initCost(tryDenom)
         counter += 1
         calcCost(tryDenom, cost)
-        print "for ", tryDenom
+        #print "for ", tryDenom
         result = getAvgCost(cost)
         if result[0] < bestScore[0]:
             bestScore = result
             bestSoFar = tryDenom
             bestCost = cost
-            print "bestCost!! %s" % bestCost
-    print "With N=%s and %s denom, the best score is: %s with avg # of coins:%s with denomination: %s" %(n, len(lastWinner)+1, bestScore[0], bestScore[1],bestSoFar)
-    print "With best cost %s"%bestCost
+            #print "bestCost!! %s" % bestCost
+    #print "With N=%s and %s denom, the best score is: %s with avg # of coins:%s with denomination: %s" %(n, len(lastWinner)+1, bestScore[0], bestScore[1],bestSoFar)
+    #print "With best cost %s"%bestCost
     return (bestSoFar, bestScore)
 
-def tryAll():
-    global counter
+def tryAll(arg1):
+    global counter, n
+    n = arg1
     counter = 0
     bestTwo= nextBest([1])
     bestThree = nextBest(bestTwo[0])
@@ -118,7 +119,7 @@ def main():
     global n
     n = sys.argv[1]
     start = time.clock()
-    tryAll()
+    tryAll(n)
     print "It took", (time.clock()-start),"seconds to complete"
     print "now:", time.clock(), "start:", start
  
