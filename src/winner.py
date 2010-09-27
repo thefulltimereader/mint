@@ -16,6 +16,7 @@ Design a set of 5 coin denominations for US $ s.t.:
 #cost = [float('inf')]*100;
 import time, math, sys
 counter=0
+n=1
 maxN = 100
 def calcCost(d, cost):
     cost[0]=0
@@ -26,7 +27,8 @@ def calcCost(d, cost):
                 if i-d[index] > 0:
                     minList += [cost[(i-d[index])] ]
             cost[i] = 1+ min(minList)
-    print cost
+    #print cost
+    return cost
     
 def calcCostOld(cost):
     cost[0]=0
@@ -39,7 +41,7 @@ def calcCostOld(cost):
                   #  print "at i: ",i," looking at j:",j,"i-j: ", (i-j)," cost[j]=", cost[j], " cost[i-j]=", cost[i-j]," cost[i]=", cost[i]
                   #  print "cost[",i,"] is now ", cost[i]
     print cost
-def getAvgCost(cost, n):
+def getAvgCost(cost):
     total = score=0.0
     for i in range(1, maxN):
         total+= cost[i]
@@ -48,8 +50,8 @@ def getAvgCost(cost, n):
             score+=cost[i]*float(n)
         else:
             score+=cost[i]
-    print "total:",total,"avg cost:",(total/maxN-1) ,"\n score: ", score;
-    return (score, (total/maxN-1));
+    print "total:",total,"avg cost:",(total/(len(cost)-1)) ,"\n score: ", score;
+    return (score, (total/(len(cost)-1)));
 '''
     Eliminating search space:
      (A: given an upper bound, B, which the highest # of coins needed to pay
@@ -79,7 +81,7 @@ def initCost(denom):
         cost[denom[i]]=1
     return cost
 
-def nextBest(n, lastWinner):
+def nextBest(lastWinner):
     global counter
     bestScore = (float('inf'), float('inf'))
     bestCost = []
@@ -90,7 +92,7 @@ def nextBest(n, lastWinner):
         counter += 1
         calcCost(tryDenom, cost)
         print "for ", tryDenom
-        result = getAvgCost(cost, n)
+        result = getAvgCost(cost)
         if result[0] < bestScore[0]:
             bestScore = result
             bestSoFar = tryDenom
@@ -98,27 +100,25 @@ def nextBest(n, lastWinner):
             print "bestCost!! %s" % bestCost
     print "With N=%s and %s denom, the best score is: %s with avg # of coins:%s with denomination: %s" %(n, len(lastWinner)+1, bestScore[0], bestScore[1],bestSoFar)
     print "With best cost %s"%bestCost
-    print "Looked at %s denominations" % counter
-    return bestSoFar
+    return (bestSoFar, bestScore)
 
-def tryAll(n):
+def tryAll():
     global counter
     counter = 0
-    maxN= 100
-    counter = 0
-    bestTwo = nextBest(n, [1])
-    bestThree = nextBest(n, bestTwo)
-    bestFour = nextBest(n, bestThree)
-    bestFive = nextBest(n, bestFour)
+    bestTwo= nextBest([1])
+    bestThree = nextBest(bestTwo[0])
+    bestFour = nextBest(bestThree[0])
+    bestFive = nextBest(bestFour[0])
 
-    print "With N=%s the best denom is %s"%(n, bestFive)
-    print "Looked at %s denominations" % counter
+    print "With N=%s the best denom is %s with score:%s, avg:%s"%(n, bestFive[0], bestFive[1][0], bestFive[1][1])
+    #print "Looked at %s denominations" % counter
     
 def main():
  #   n = raw_input("What's the N?")
+    global n
     n = sys.argv[1]
     start = time.clock()
-    tryAll(n)
+    tryAll()
     print "It took", (time.clock()-start),"seconds to complete"
     print "now:", time.clock(), "start:", start
  
