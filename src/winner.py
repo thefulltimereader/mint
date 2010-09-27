@@ -15,11 +15,9 @@ Design a set of 5 coin denominations for US $ s.t.:
 
 #cost = [float('inf')]*100;
 import time, math, sys
-
-maxN = 100;
-cost = []
-flag=False
-def calcCost(d):
+counter=0
+maxN = 100
+def calcCost(d, cost):
     cost[0]=0
     for i in xrange(1, maxN):
         if(cost[i] == float('inf')): 
@@ -54,11 +52,11 @@ def getAvgCost(cost, n):
     return (score, (total/maxN-1));
 '''
     Eliminating search space:
-     A: given an upper bound, B, which the highest # of coins needed to pay
+     (A: given an upper bound, B, which the highest # of coins needed to pay
         any amount from 1-99cent, you must have a coin at least total/B.
         i.e. if B = 4, your denomination must have 25. 
         i.e. if maxN{denom}<25, useless.
-        Say B = 5, you must have a 20
+        Say B = 5, you must have a 20)
      B: Who needs [1,2,3,4,9], or [1,2,3,4,99]?. Given d=[d1,d2,d3,d4,d5]
         Esp the distance bewteen d4, d5 should be big enough.
         Idea of Fast foward: when evaluating every x for [d1,d2,d3,d4,x]. If
@@ -66,6 +64,7 @@ def getAvgCost(cost, n):
         fast forward. It's probably not because of the x, but the set [d1,d2,d3,d4]
         What is "not doing well"? have a running avg score so far, if that set 
         [d1,d2,d3,d4] does not go above the running avg, fast forward
+        = i.e. TAKE THE WINNERS OF SMALLER SET
       C: Do we need any coin bigger than .50??  Say there exists d5=.75, it is 
         good for the last quarter of a dollar, we can use the first quarter to calculate the last quarter,
         but if 50cent coin allows us to use half of to copy over to the second half.
@@ -73,35 +72,48 @@ def getAvgCost(cost, n):
         with 50cent, you can copy the first 1/2 to the last 1/2 with all val +1, 
         50cent is much more space efficient 
 '''
-def tryAll(n):
-    bestQuad = [1, 2, 3, 4, 5]; best = (float('inf'), float('inf'));
-    bestCost=[float('inf')]*maxN
-    runningAvg = counter =0
-    global cost
-    cost = [float('inf')]*maxN
-    upperBound = maxN/5;
-    for i in range(2, maxN/2-3):
-        for j in range(i+1, maxN/2-2):
-            for h in range(j+1, maxN/2-1):
-                for k in range(h+1, maxN/2):
-                    cost = [float('inf')]*maxN
-                    tryQuad = [1, i, j, h, k]
-                    if max(tryQuad)>=upperBound:
-                        cost[1]=cost[i]=cost[j]=cost[h]=cost[k]=1;
-                        counter+=1
-                        #calcCost(tryQuad)
-                        calcCostOld(cost)
-                        print "for ", tryQuad
-                        result = getAvgCost(cost, n)
-                        if result[0] < best[0]:
-                            best = result
-                            bestQuad = tryQuad
-                            bestCost = cost
-                            print "bestCost!! %s"%bestCost
-                            
-    print "With N=", n,"the best score is: ", best[0], " with avg # of coins:", best[1]," with denomination: " ,bestQuad
+
+def initCost(denom):
+    cost = [float('inf')] * maxN
+    for i in xrange(len(denom)):
+        cost[denom[i]]=1
+    return cost
+
+def nextBest(n, lastWinner):
+    global counter
+    bestScore = (float('inf'), float('inf'))
+    bestCost = []
+    bestSoFar = []
+    for i in xrange(lastWinner[len(lastWinner)-1], maxN/2):
+        tryDenom = lastWinner+[i]
+        cost = initCost(tryDenom)
+        counter += 1
+        calcCost(tryDenom, cost)
+        print "for ", tryDenom
+        result = getAvgCost(cost, n)
+        if result[0] < bestScore[0]:
+            bestScore = result
+            bestSoFar = tryDenom
+            bestCost = cost
+            print "bestCost!! %s" % bestCost
+    print "With N=%s and %s denom, the best score is: %s with avg # of coins:%s with denomination: %s" %(n, len(lastWinner)+1, bestScore[0], bestScore[1],bestSoFar)
     print "With best cost %s"%bestCost
     print "Looked at %s denominations" % counter
+    return bestSoFar
+
+def tryAll(n):
+    global counter
+    counter = 0
+    maxN= 100
+    counter = 0
+    bestTwo = nextBest(n, [1])
+    bestThree = nextBest(n, bestTwo)
+    bestFour = nextBest(n, bestThree)
+    bestFive = nextBest(n, bestFour)
+
+    print "With N=%s the best denom is %s"%(n, bestFive)
+    print "Looked at %s denominations" % counter
+    
 def main():
  #   n = raw_input("What's the N?")
     n = sys.argv[1]
