@@ -9,7 +9,7 @@ if __name__ == '__main__':
     global n
     n = sys.argv[1]
     start = time.clock()
-    winner.tryAll(n)
+    winner.contestOf(n, 20)
     exchange.tryExchange(n)
     print "It took", (time.clock()-start),"seconds to complete"
     print "now:", time.clock(), "start:", start

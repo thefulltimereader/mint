@@ -104,13 +104,14 @@ def nextBest(lastWinner):
 
 def nextWinners(lastWinners):
     global counter
-    newWinners =  [([],(float('inf'), 1)),([],(float('inf'), 1)),([],(float('inf'), 1))]
+    newWinners =  [([],(float('inf'), 1))]*outOf
     bestScore = [(float('inf'), float('inf'))]
     bestCost = []
     bestSoFar = []
     for eachWinner in lastWinners:
         #eachWinner is a tuple of ([denom], (score,avg))
         thisDenom = eachWinner[0]
+        if thisDenom[len(thisDenom)-1] > maxN/2: print thisDenom
         for i in xrange(thisDenom[len(thisDenom)-1], maxN/2):
             tryDenom = thisDenom+[i]
             cost = initCost(tryDenom)
@@ -120,7 +121,7 @@ def nextWinners(lastWinners):
             result = getAvgCost(cost)
             contestant = (tryDenom, result)
             #print contestant
-            newWinners = getTop3(contestant, newWinners, i)
+            newWinners = getTopX(contestant, newWinners)
             #print "bestCost!! %s" % bestCost
     #print "With N=%s and %s denom, the best score is: %s with avg # of coins:%s with denomination: %s" %(n, len(lastWinner)+1, bestScore[0], bestScore[1],bestSoFar)
     #print "With best cost %s"%bestCost
@@ -130,7 +131,7 @@ def nextWinners(lastWinners):
     add it to the list of bestWinners, sort by their score 
     and take the top 3
 '''
-def getTop3(winner, bestWinners, i):
+def getTopX(winner, bestWinners):
     #winner = ([1,10], (900.0, 9))
     #bestWinners = [([],(float('inf'), 1)),([],(float('inf'), 1)),([],(float('inf'), 1))]
     bestWinners+=[winner]
@@ -140,8 +141,9 @@ def getTop3(winner, bestWinners, i):
     return bestWinners[1:]
 
 def test():
-    global n
-    n= 50
+    global n, outOf
+    n= 1
+    outOf = 30
     bestTwos = nextWinners([ ([1], (0,0)) ])
     print "bestTwos:", bestTwos
     bestThrees = nextWinners(bestTwos)
@@ -150,9 +152,28 @@ def test():
     print "bestFours:", bestFours
     bestFives = nextWinners(bestFours)
     print "best5s:", bestFives
-    print "the best is:", bestFives[2:]
+    print "the best is:", bestFives[outOf-1:]
     
-def tryAll(arg1):
+def contestOf(arg1, numberOfContestants):
+    global n, outOf
+    n= arg1
+    if (numberOfContestants >= maxN/2): 
+        raise Exception('the number of contestants per stage is too big')
+    outOf = numberOfContestants
+    bestTwos = nextWinners([ ([1], (0,0)) ])
+    #print "bestTwos:", bestTwos
+    bestThrees = nextWinners(bestTwos)
+    #print "bestThrees:", bestThrees
+    bestFours = nextWinners(bestThrees)
+    #print "bestFours:", bestFours
+    bestFives = nextWinners(bestFours)
+    #print "best5s:", bestFives
+    best = bestFives[outOf-1:][0]
+    print "the best is:", bestFives[outOf-1:]
+    print "With N=%s the best denom is %s with score:%s, avg:%s"%(n, best[0], best[1][0], best[1][1])
+    print "# of contestants per stage=%s"% outOf
+    
+def onlyBests(arg1):
     global counter, n
     n = arg1
     counter = 0
@@ -169,7 +190,7 @@ def main():
     global n
     n = sys.argv[1]
     start = time.clock()
-    tryAll(n)
+    contestOf(n, 20)
     print "It took", (time.clock()-start),"seconds to complete"
     print "now:", time.clock(), "start:", start
  

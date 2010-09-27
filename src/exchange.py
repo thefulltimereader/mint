@@ -71,16 +71,17 @@ def calcExchangeCost(exactCost, denom):
         exchangeCost[i] = bestExchangeCost
         # what is us denom and c=29, its better to pay 30 and get 1 back = 3 coins rather than flip 4..
         #line 73-95 just playing around!
-        checkBetterByPayingMore(denom, i, exactCost, exchangeCost[i])
-        for few in range(2):
-            addedFew = denom[few]+i
-            if addedFew < maxN:
-                coinsWithAdded = exactCost[addedFew]+1
-                if (coinsWithAdded < exchangeCost[i]):
-                    exchangeCost[i] =coinsWithAdded
+        #-------
+#        checkBetterByPayingMore(denom, i, exactCost, exchangeCost[i])
+#        for few in range(2):
+#            addedFew = denom[few]+i
+#            if addedFew < maxN:
+#                coinsWithAdded = exactCost[addedFew]+1
+#                if (coinsWithAdded < exchangeCost[i]):
+#                    exchangeCost[i] =coinsWithAdded
                     #print "addedFew", addedFew
-                    print "coins With Added", coinsWithAdded, "with denom:",denom[few],"is better for",i 
-        
+                    #print "coins With Added", coinsWithAdded, "with denom:",denom[few],"is better for",i 
+        #---
     return exchangeCost
 
 def checkBetterByPayingMore(denom, price, exactCost, bestSoFar):
