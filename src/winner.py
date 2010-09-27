@@ -102,6 +102,56 @@ def nextBest(lastWinner):
     #print "With best cost %s"%bestCost
     return (bestSoFar, bestScore)
 
+def nextWinners(lastWinners):
+    global counter
+    newWinners =  [([],(float('inf'), 1)),([],(float('inf'), 1)),([],(float('inf'), 1))]
+    bestScore = [(float('inf'), float('inf'))]
+    bestCost = []
+    bestSoFar = []
+    for eachWinner in lastWinners:
+        #eachWinner is a tuple of ([denom], (score,avg))
+        thisDenom = eachWinner[0]
+        for i in xrange(thisDenom[len(thisDenom)-1], maxN/2):
+            tryDenom = thisDenom+[i]
+            cost = initCost(tryDenom)
+            counter += 1
+            calcCost(tryDenom, cost)
+            #result has [ (score), (avg)]
+            result = getAvgCost(cost)
+            contestant = (tryDenom, result)
+            #print contestant
+            newWinners = getTop3(contestant, newWinners, i)
+            #print "bestCost!! %s" % bestCost
+    #print "With N=%s and %s denom, the best score is: %s with avg # of coins:%s with denomination: %s" %(n, len(lastWinner)+1, bestScore[0], bestScore[1],bestSoFar)
+    #print "With best cost %s"%bestCost
+    return newWinners#(bestSoFar, bestScore)
+'''
+    winner is in tulple (bestDenomSoFar, itsScore)
+    add it to the list of bestWinners, sort by their score 
+    and take the top 3
+'''
+def getTop3(winner, bestWinners, i):
+    #winner = ([1,10], (900.0, 9))
+    #bestWinners = [([],(float('inf'), 1)),([],(float('inf'), 1)),([],(float('inf'), 1))]
+    bestWinners+=[winner]
+    #if i==11 or i==10 or i==9: print "with", i,"before sort: ", bestWinners
+    bestWinners= list(sorted(bestWinners, key=lambda item:item[1][0],  reverse=True))
+    #if i==11 or i==10 or i==9:print "with",i,"after sort: ", bestWinners[1:]
+    return bestWinners[1:]
+
+def test():
+    global n
+    n= 50
+    bestTwos = nextWinners([ ([1], (0,0)) ])
+    print "bestTwos:", bestTwos
+    bestThrees = nextWinners(bestTwos)
+    print "bestThrees:", bestThrees
+    bestFours = nextWinners(bestThrees)
+    print "bestFours:", bestFours
+    bestFives = nextWinners(bestFours)
+    print "best5s:", bestFives
+    print "the best is:", bestFives[2:]
+    
 def tryAll(arg1):
     global counter, n
     n = arg1
@@ -110,7 +160,7 @@ def tryAll(arg1):
     bestThree = nextBest(bestTwo[0])
     bestFour = nextBest(bestThree[0])
     bestFive = nextBest(bestFour[0])
-
+    
     print "With N=%s the best denom is %s with score:%s, avg:%s"%(n, bestFive[0], bestFive[1][0], bestFive[1][1])
     #print "Looked at %s denominations" % counter
     
