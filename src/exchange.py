@@ -19,8 +19,8 @@ Things to consider:
             i.e if I am a 70cent, my inverse is 30cent, i want the min of two
         - idea: given a price, find a denomination that is higher than the price
             see the change, and see the minimum
+            - say I'm a price, see all the denom that's bigger than me, see the change and find the minimum
     2. We don't have to have a penny, but we always have 1.00.
-        isn't 50Cent like our penny..? that's where everything folds in to sym
 '''
 import time, math, sys, winner
 
@@ -55,7 +55,8 @@ def calcExchangeCost(exactCost, denom):
         listOfChanges=[100-i]
         for d in denom:
             if d>i:
-                listOfChanges+=[i-d]
+                #print "list of changes for %s:%s"%(i, d-i)
+                listOfChanges+=[d-i]
         for c in range(len(listOfChanges)):
             change = listOfChanges[c]
             #but if exactCost[change] == 0, that means that part 
@@ -63,13 +64,44 @@ def calcExchangeCost(exactCost, denom):
             if exactCost[change]>0:
                 if c is 0: exactCostForAChange = exactCost[change] #this is a dollar
                 else: exactCostForAChange = exactCost[change]+1
-                if bestExchangeCost >0:
+                if bestExchangeCost !=0:
                     if exactCostForAChange < bestExchangeCost:
                         bestExchangeCost = exactCostForAChange
                 else: bestExchangeCost = exactCostForAChange
         exchangeCost[i] = bestExchangeCost
+        # what is us denom and c=29, its better to pay 30 and get 1 back = 3 coins rather than flip 4..
+        #line 73-95 just playing around!
+        checkBetterByPayingMore(denom, i, exactCost, exchangeCost[i])
+        for few in range(2):
+            addedFew = denom[few]+i
+            if addedFew < maxN:
+                coinsWithAdded = exactCost[addedFew]+1
+                if (coinsWithAdded < exchangeCost[i]):
+                    exchangeCost[i] =coinsWithAdded
+                    #print "addedFew", addedFew
+                    print "coins With Added", coinsWithAdded, "with denom:",denom[few],"is better for",i 
+        
     return exchangeCost
+
+def checkBetterByPayingMore(denom, price, exactCost, bestSoFar):
+    for few in range(2):
+        addedExtra = denom[few]+price
+        coinsAdded = 1
+        list = [float('inf')]
+        while addedExtra < maxN and coinsAdded*denom[few] <= denom[2]:
+            list+=[exactCost[addedExtra]+coinsAdded]
+            coinsAdded+=1
+            addedExtra+=denom[few]
+        #if min(list)< bestSoFar: print "for price %s its better to pay extra %s coins"%(price, min(list))
+def testUS():
+    d = [1,5,10,25,50]
+    cost = initCost(d)
+    exact = calcExactCost(d,cost)
+    exchangeA = calcExchangeCost(exact, d)
+    print exchangeA
     
+
+
 def initCost(denom):
     cost = [float('inf')] * maxN
     for i in xrange(len(denom)):
